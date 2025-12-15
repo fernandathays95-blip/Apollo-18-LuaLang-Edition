@@ -1,0 +1,47 @@
+/**
+ * Lua Apollo Language
+ * File: ENGINE/ROTOR_CONTROLLER.lualang
+ *
+ * Module: ROTOR_CONTROL
+ * Purpose: Control engine rotor speed safely
+ *
+ * Deterministic execution
+ * Fail-safe asserts
+ */
+
+module ROTOR_CONTROLLER
+
+const ROTOR_ID        = 0
+const MAX_RPM         = 8200
+const MIN_RPM         = 500
+const STARTUP_RPM     = 1200
+const RPM_STEP        = 250
+
+var rotor_ready = false
+
+function check_rotor_limits(rpm)
+    assert rpm >= MIN_RPM
+    assert rpm <= MAX_RPM
+end
+
+function rotor_start()
+    check_rotor_limits(STARTUP_RPM)
+    engine.rotor_rpm(ROTOR_ID, STARTUP_RPM)
+    rotor_ready = true
+end
+
+function rotor_set(rpm)
+    check_rotor_limits(rpm)
+    engine.rotor_rpm(ROTOR_ID, rpm)
+end
+
+function rotor_shutdown()
+    engine.rotor_rpm(ROTOR_ID, 0)
+    rotor_ready = false
+end
+
+-- Entry task
+task MAIN priority 1
+    rotor_start()
+    assert rotor_ready == true
+end
