@@ -1,0 +1,39 @@
+/*
+ * Arduino Hardware Layer
+ * File: ENGINE/ROTOR_CONTROLLER.arduino
+ *
+ * Interface between Lua Apollo Language
+ * and physical rotor motor controller
+ */
+
+#define ROTOR_PWM_PIN 9
+#define ROTOR_ENABLE  8
+
+const int MAX_PWM = 255;
+const int MIN_PWM = 0;
+
+void setup() {
+  pinMode(ROTOR_PWM_PIN, OUTPUT);
+  pinMode(ROTOR_ENABLE, OUTPUT);
+
+  digitalWrite(ROTOR_ENABLE, LOW);
+  analogWrite(ROTOR_PWM_PIN, 0);
+}
+
+void setRotorRPM(int rpm) {
+  int pwm = map(rpm, 0, 8200, MIN_PWM, MAX_PWM);
+  pwm = constrain(pwm, MIN_PWM, MAX_PWM);
+
+  digitalWrite(ROTOR_ENABLE, HIGH);
+  analogWrite(ROTOR_PWM_PIN, pwm);
+}
+
+void shutdownRotor() {
+  analogWrite(ROTOR_PWM_PIN, 0);
+  digitalWrite(ROTOR_ENABLE, LOW);
+}
+
+void loop() {
+  // Hardware waits for commands
+  // Commands assumed to come from LuaLang runtime
+}
