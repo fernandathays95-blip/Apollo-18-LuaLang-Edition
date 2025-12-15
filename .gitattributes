@@ -1,0 +1,2 @@
+*.lualang linguist-detectable=true
+*.lualang linguist-language=Lua_Apollo_Language
