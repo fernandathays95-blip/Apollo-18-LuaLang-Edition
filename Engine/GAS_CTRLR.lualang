@@ -1,0 +1,57 @@
+/**
+ * Lua Apollo Language
+ * File: GAS_CTRLR.lualang
+ *
+ * Mission Phase: PRE-LAUNCH / ASCENT
+ * Module: GAS_CONTROL
+ *
+ * Safety rules:
+ * - Deterministic execution
+ * - No dynamic memory
+ * - Fail-safe on any assert
+ */
+
+module GAS_CTRLR
+
+const GAS_LINE_MAIN      = 0
+const GAS_LINE_SECONDARY = 1
+
+const MAX_FLOW_RATE   = 100.0   -- percent
+const MIN_FLOW_RATE   = 0.0
+const SAFE_PRESSURE   = 350.0   -- Bar
+const SAFE_TEMPERATURE= 900.0   -- Kelvin
+
+var gas_enabled = false
+
+function check_gas_safety(line)
+    assert gas.pressure(line)    < SAFE_PRESSURE
+    assert gas.temperature(line) < SAFE_TEMPERATURE
+end
+
+function set_gas_flow(line, rate)
+    assert rate >= MIN_FLOW_RATE
+    assert rate <= MAX_FLOW_RATE
+    valve.open(line, rate)
+end
+
+function enable_gas()
+    check_gas_safety(GAS_LINE_MAIN)
+    check_gas_safety(GAS_LINE_SECONDARY)
+
+    set_gas_flow(GAS_LINE_MAIN, 50.0)
+    set_gas_flow(GAS_LINE_SECONDARY, 25.0)
+
+    gas_enabled = true
+end
+
+function shutdown_gas()
+    valve.close(GAS_LINE_MAIN)
+    valve.close(GAS_LINE_SECONDARY)
+    gas_enabled = false
+end
+
+-- Entry task (AGC-style)
+task MAIN priority 2
+    enable_gas()
+    assert gas_enabled == true
+end
