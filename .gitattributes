@@ -1,2 +1,4 @@
 *.lualang linguist-detectable=true
 *.lualang linguist-language=Lua_Apollo_Language
+*.mpl linguist-detectable=true
+*.mpl linguist-language=MPLISDE
