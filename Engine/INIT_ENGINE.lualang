@@ -1,0 +1,47 @@
+/**
+ * Lua Apollo Language
+ * File: INIT_ENGINE.lualang
+ *
+ * Mission Phase: PRE-LAUNCH
+ * Module: ENGINE_INITIALIZATION
+ *
+ * All operations are deterministic.
+ * No dynamic memory.
+ * No runtime compilation.
+ */
+
+module ENGINE_INIT
+
+const ENGINE_ID        = 1
+const SAFE_TEMPERATURE = 850      -- Kelvin
+const SAFE_PRESSURE    = 320       -- Bar
+const START_RPM        = 1200
+
+var engine_ready  = false
+var engine_locked = true
+
+function check_sensors()
+    assert sensor.temperature(ENGINE_ID) < SAFE_TEMPERATURE
+    assert sensor.pressure(ENGINE_ID)    < SAFE_PRESSURE
+end
+
+function unlock_engine()
+    engine_locked = false
+end
+
+function spinup_engine()
+    engine.rpm(ENGINE_ID, START_RPM)
+end
+
+function init_engine()
+    check_sensors()
+    unlock_engine()
+    spinup_engine()
+    engine_ready = true
+end
+
+-- Entry point (AGC-style)
+task MAIN priority 1
+    init_engine()
+    assert engine_ready == true
+end
