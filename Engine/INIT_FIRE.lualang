@@ -1,0 +1,4 @@
+__START
+ALERT,.aciiz "ALERTA: o fogo vai ser ligado⚠️"
+__extern INIT { FIRE , ENGINE_START };
+__END
