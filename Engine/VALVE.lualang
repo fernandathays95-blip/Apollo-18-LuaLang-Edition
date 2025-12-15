@@ -1,0 +1,17 @@
+__START
+#valve (MODULE);
+if \
+  valve.open \
+else \
+  valve.close \
+  if \
+    valve.reduse \
+  else \
+    valve.AUTO.CONTROLER \
+  __static ENGINE.VALVE.*;
+  __static ENGINE.VALVE.AUTO.*;
+  __static ENGINE.VALVE.CONTROLL.*;
+  %VALVE ==> %CTRL;
+  %ENGINE ==> %START;
+  static import ENGINE.*;
+  __END
